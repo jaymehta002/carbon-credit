@@ -1,8 +1,10 @@
 import React from "react";
 import Image from "next/image";
 import { ArrowRight, Menu } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import AboutUs from "./AboutUs";
+import { SignedIn, SignedOut } from "@clerk/nextjs";
+import Link from "next/link";
 
 export default function Component() {
   return (
@@ -15,7 +17,7 @@ export default function Component() {
           height={40}
           className="w-24"
         />
-        <nav className="hidden md:flex space-x-6">
+        <nav className="hidden md:flex items-center space-x-6">
           <a href="#" className="hover:text-green-400">
             Our Proposition
           </a>
@@ -31,7 +33,14 @@ export default function Component() {
           <a href="#" className="hover:text-green-400">
             Contact
           </a>
+          <SignedIn>
+          <Link className={buttonVariants({ variant: "default" })} href={"/dashboard"}>Dashboard</Link>  
+          </SignedIn>
+          <SignedOut>
+          <Link className={buttonVariants({ variant: "default" })} href={"sign-up"}>Log In</Link>
+          </SignedOut>
         </nav>
+
         <Button variant="ghost" size="icon" className="md:hidden">
           <Menu className="h-6 w-6" />
         </Button>
