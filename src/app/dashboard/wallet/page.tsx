@@ -1,8 +1,9 @@
+import WalletPage from '@/components/Dashboard/WalletPage'
 import React from 'react'
 
 const Wallet = () => {
   return (
-    <div>Wallet</div>
+    <WalletPage/>
   )
 }
 
