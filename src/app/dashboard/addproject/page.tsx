@@ -1,8 +1,9 @@
+import AddProjectPage from '@/components/Dashboard/AddProject'
 import React from 'react'
 
 const AddProject = () => {
   return (
-    <div>AddProject</div>
+    <AddProjectPage/>
   )
 }
 
