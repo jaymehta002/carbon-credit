@@ -4,6 +4,13 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Progress } from "@/components/ui/progress"
 import { UploadIcon, CheckCircleIcon } from "lucide-react"
 
@@ -15,8 +22,14 @@ const documentTypes = [
   "Risk Assessment"
 ]
 
-export default function AddProjectPage() {
+export default function AddProjectUserPage() {
   const [projectName, setProjectName] = useState('')
+  const [projectType, setProjectType] = useState("")
+  const projectOptions = [
+    { value: 'project1', label: 'Project 1' },
+    { value: 'project2', label: 'Project 2' },
+    { value: 'project3', label: 'Project 3' },
+  ]
   const [currentStep, setCurrentStep] = useState(0)
   const [uploadedFiles, setUploadedFiles] = useState<string[]>([])
 
@@ -50,6 +63,21 @@ export default function AddProjectPage() {
               onChange={(e) => setProjectName(e.target.value)}
             />
           </div>
+          <div className="space-y-2">
+      <Label htmlFor="projectName">Project Type</Label>
+      <Select onValueChange={setProjectType} value={projectType}>
+        <SelectTrigger id="projectType">
+          <SelectValue placeholder="Select a project" />
+        </SelectTrigger>
+        <SelectContent>
+          {projectOptions.map((option) => (
+            <SelectItem key={option.value} value={option.value}>
+              {option.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
 
           <div className="space-y-4">
             <div className="flex justify-between items-center">
