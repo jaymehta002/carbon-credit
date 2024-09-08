@@ -13,16 +13,19 @@ import {
 } from "@/components/ui/select"
 import { Progress } from "@/components/ui/progress"
 import { UploadIcon, CheckCircleIcon } from "lucide-react"
+import { ProjectCategory } from '@prisma/client'
 
-const documentTypes = [
-  "Project Proposal",
-  "Budget Estimation",
-  "Timeline",
-  "Resource Allocation",
-  "Risk Assessment"
-]
 
-export default function AddProjectUserPage() {
+export default function AddProjectUserPage({fetchedProjectCategories}:{fetchedProjectCategories:ProjectCategory[]}) {
+  console.log("🚀 ~ AddProjectUserPage ~ fetchedProjectCategories:", fetchedProjectCategories)
+  
+  const documentTypes = [
+    "Project Proposal",
+    "Budget Estimation",
+    "Timeline",
+    "Resource Allocation",
+    "Risk Assessment"
+  ]
   const [projectName, setProjectName] = useState('')
   const [projectType, setProjectType] = useState("")
   const projectOptions = [
