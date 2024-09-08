@@ -28,7 +28,7 @@ import { addProjectUserSide } from "@/app/dashboard/addproject/actions"
 export default function AddProjectUserPage({
   fetchedProjectCategories,
 }: {
-  fetchedProjectCategories: ProjectCategory[]
+  fetchedProjectCategories: (ProjectCategory & { fields: Field[] })[]
 }) {
   const [fields, setFields] = useState<Field[]>([])
   const [projectType, setProjectType] = useState("")
@@ -74,7 +74,7 @@ export default function AddProjectUserPage({
     return (completedSteps / fields.length) * 100
   }
 
-  const handleProjectFormSubmit = async (event) => {
+  const handleProjectFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
   
