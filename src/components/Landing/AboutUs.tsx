@@ -24,7 +24,7 @@ const AnimatedSection = ({ children, delay = 0 }:{children:ReactNode,delay?:numb
 
 const AboutUs = () => {
   return (
-    <section className="bg-white py-24">
+    <section className="bg-black py-24">
       <div className="container mx-auto px-4">
         {/* Hero Section wrapped in AnimatedSection */}
         <AnimatedSection>
@@ -36,7 +36,7 @@ const AboutUs = () => {
               objectFit="cover"
               className="rounded-lg shadow-xl"
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-zinc-900 via-transparent to-zinc-900 opacity-75"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-black opacity-75"></div>
             <div className="text-center z-10 text-white">
               <h2 className="text-6xl font-extrabold mb-6">Net Zero Solutions</h2>
               <p className="text-2xl max-w-2xl mx-auto">
@@ -52,7 +52,7 @@ const AboutUs = () => {
           {/* Text Content wrapped in AnimatedSection */}
           <AnimatedSection delay={0.2}>
             <div>
-              <h3 className="text-4xl font-bold text-zinc-900 mb-6">
+              <h3 className="text-4xl font-bold text-white mb-6">
                 Our Mission
               </h3>
               <p className="text-lg text-gray-600 mb-8">
@@ -88,13 +88,13 @@ const AboutUs = () => {
         <div className="mt-24">
           <AnimatedSection delay={0.6}>
             <div className="text-center">
-              <h3 className="text-4xl font-bold mb-12 text-zinc-900">
+              <h3 className="text-4xl font-bold mb-12 text-white">
                 Our Impact
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                 {[{ title: "Projects Funded", value: "200+", icon: "📊" }, { title: "CO₂ Reduced", value: "1M+ tons", icon: "🌍" }, { title: "Communities Impacted", value: "500+", icon: "🤝" }].map((stat, index) => (
                   <AnimatedSection key={index} delay={0.8 + index * 0.1}>
-                    <div className="bg-white border border-gray-200 p-8 rounded-lg shadow-lg">
+                    <div className="bg-gray-900 border border-gray-700 p-8 rounded-lg shadow-lg">
                       <div className="text-5xl mb-4">{stat.icon}</div>
                       <h4 className="text-4xl font-extrabold text-green-500 mb-2">
                         {stat.value}

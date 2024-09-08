@@ -110,7 +110,7 @@ export default function Component() {
         </AnimatedSection>
 
         <AnimatedSection>
-          <section className="bg-zinc-900 py-16">
+          <section className="bg-black py-16">
             <div className="container mx-auto px-4">
               <motion.h2
                 className="text-6xl md:text-8xl font-bold mb-16"
@@ -229,7 +229,7 @@ export default function Component() {
         </AnimatedSection>
       </main>
 
-      <footer className="bg-zinc-900 py-12">
+      <footer className="bg-black py-12">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
