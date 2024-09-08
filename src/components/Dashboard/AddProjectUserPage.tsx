@@ -1,7 +1,14 @@
 "use client"
-import { useState } from 'react'
+
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
@@ -13,125 +20,181 @@ import {
 } from "@/components/ui/select"
 import { Progress } from "@/components/ui/progress"
 import { UploadIcon, CheckCircleIcon } from "lucide-react"
-import { ProjectCategory } from '@prisma/client'
+import { ProjectCategory,Field } from "@prisma/client"
+import { addProjectUserSide } from "@/app/dashboard/addproject/actions"
 
 
-export default function AddProjectUserPage({fetchedProjectCategories}:{fetchedProjectCategories:ProjectCategory[]}) {
-  console.log("🚀 ~ AddProjectUserPage ~ fetchedProjectCategories:", fetchedProjectCategories)
-  
-  const documentTypes = [
-    "Project Proposal",
-    "Budget Estimation",
-    "Timeline",
-    "Resource Allocation",
-    "Risk Assessment"
-  ]
-  const [projectName, setProjectName] = useState('')
+
+export default function AddProjectUserPage({
+  fetchedProjectCategories,
+}: {
+  fetchedProjectCategories: ProjectCategory[]
+}) {
+  const [fields, setFields] = useState<Field[]>([])
   const [projectType, setProjectType] = useState("")
-  const projectOptions = [
-    { value: 'project1', label: 'Project 1' },
-    { value: 'project2', label: 'Project 2' },
-    { value: 'project3', label: 'Project 3' },
-  ]
-  const [currentStep, setCurrentStep] = useState(0)
-  const [uploadedFiles, setUploadedFiles] = useState<string[]>([])
+  const [uploadedFiles, setUploadedFiles] = useState<Record<string, string>>({})
+  const [answers, setAnswers] = useState<Record<string, string>>({})
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  useEffect(() => {
+    const filteredProject = fetchedProjectCategories.find(
+      (category) => category.name === projectType
+    )
+    setFields(filteredProject?.fields || [])
+    setUploadedFiles({})
+    setAnswers({})
+  }, [projectType, fetchedProjectCategories])
+
+  const projectOptions = fetchedProjectCategories.map((category) => ({
+    label: category.name,
+    value: category.name,
+  }))
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>, fieldId: string) => {
     const file = event.target.files?.[0]
     if (file) {
-      setUploadedFiles([...uploadedFiles, file.name])
-      if (currentStep < documentTypes.length) {
-        setCurrentStep(currentStep + 1)
-      }
+      setUploadedFiles({ ...uploadedFiles, [fieldId]: file.name })
     }
   }
 
-  const isStepComplete = (step: number) => uploadedFiles.length > step
+  const handleQuestionAnswer = (id: string, answer: string) => {
+    setAnswers({ ...answers, [id]: answer })
+  }
 
-  const progress = (uploadedFiles.length / documentTypes.length) * 100
+  const isStepComplete = (field: Field) => {
+    if (field.type === "FILE") {
+      return !!uploadedFiles[field.id]
+    } else {
+      return answers[field.id]?.length > 0
+    }
+  }
+
+  const calculateProgress = () => {
+    if (fields.length === 0) return 0
+    const completedSteps = fields.filter(isStepComplete).length
+    return (completedSteps / fields.length) * 100
+  }
+
+  const handleProjectFormSubmit = async (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+  
+    // Handle file uploads first
+    for (const field of fields) {
+      if (field.type === 'FILE') {
+        const file = formData.get(field.id) as File;
+        if (file && file.size > 0) {
+          const fileUrl = "file url";
+          formData.set(field.id, fileUrl);
+        }
+      }
+    }
+  
+    const result = await addProjectUserSide(formData);
+    // Handle result...
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <form onSubmit={handleProjectFormSubmit}>
       <Card className="max-w-2xl mx-auto">
         <CardHeader>
           <CardTitle className="text-2xl font-bold">Add New Project</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="projectName">Project Name</Label>
-            <Input
-              id="projectName"
-              placeholder="Enter project name"
-              value={projectName}
-              onChange={(e) => setProjectName(e.target.value)}
-            />
+            <Label htmlFor="projectType">Project Type</Label>
+            <Select onValueChange={setProjectType} value={projectType}>
+              <SelectTrigger id="projectType">
+                <SelectValue placeholder="Select a project" />
+              </SelectTrigger>
+              <SelectContent>
+                {projectOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-          <div className="space-y-2">
-      <Label htmlFor="projectName">Project Type</Label>
-      <Select onValueChange={setProjectType} value={projectType}>
-        <SelectTrigger id="projectType">
-          <SelectValue placeholder="Select a project" />
-        </SelectTrigger>
-        <SelectContent>
-          {projectOptions.map((option) => (
-            <SelectItem key={option.value} value={option.value}>
-              {option.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </div>
 
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <h3 className="text-lg font-semibold">Upload Documents</h3>
-              <span className="text-sm text-muted-foreground">
-                {uploadedFiles.length} of {documentTypes.length} uploaded
-              </span>
-            </div>
-            <Progress value={progress} className="w-full" />
+          <input type="hidden" name="projectType" value={projectType} />
 
-            {documentTypes.map((docType, index) => (
-              <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
-                <div className="flex items-center space-x-4">
-                  {isStepComplete(index) ? (
-                    <CheckCircleIcon className="text-green-500" />
-                  ) : (
-                    <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-sm font-medium">
-                      {index + 1}
-                    </div>
-                  )}
-                  <span>{docType}</span>
-                </div>
-                <div>
-                  {isStepComplete(index) ? (
-                    <span className="text-sm text-muted-foreground">{uploadedFiles[index]}</span>
-                  ) : (
-                    <Label htmlFor={`file-upload-${index}`} className="cursor-pointer">
-                      <div className="flex items-center space-x-2 text-primary">
-                        <UploadIcon className="w-4 h-4" />
-                        <span>Upload</span>
-                      </div>
-                      <Input
-                        id={`file-upload-${index}`}
-                        type="file"
-                        className="hidden"
-                        onChange={handleFileUpload}
-                        disabled={currentStep !== index}
-                      />
-                    </Label>
-                  )}
-                </div>
+
+          {fields.length > 0 && (
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-semibold">Project Details</h3>
+                <span className="text-sm text-muted-foreground">
+                  {fields.filter(isStepComplete).length} of {fields.length} completed
+                </span>
               </div>
-            ))}
-          </div>
+              <Progress value={calculateProgress()} className="w-full" />
+
+              {fields.map((field, index) => (
+                <div
+                  key={field.id}
+                  className="space-y-2 p-4 border rounded-lg"
+                >
+                  <div className="flex items-center space-x-4">
+                    {isStepComplete(field) ? (
+                      <CheckCircleIcon className="text-green-500" />
+                    ) : (
+                      <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-sm font-medium">
+                        {index + 1}
+                      </div>
+                    )}
+                    <Label htmlFor={field.id} className="text-sm font-medium">
+                      {field.type === "QUESTION" ? field.question : `Upload ${field.name || 'File'}`}
+                    </Label>
+                  </div>
+                  {field.type === "FILE" ? (
+                    <div>
+                      <Input
+                        id={field.id}
+                        name={field.id} // Added name attribute
+                        type="file"
+                        onChange={(e) => handleFileUpload(e, field.id)}
+                        className="hidden"
+                      />
+                      <Label
+                        htmlFor={field.id}
+                        className="cursor-pointer inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+                      >
+                        <UploadIcon className="w-4 h-4 mr-2" />
+                        {uploadedFiles[field.id] ? 'Change File' : 'Upload File'}
+                      </Label>
+                      {uploadedFiles[field.id] && (
+                        <p className="mt-2 text-sm text-muted-foreground">
+                          {uploadedFiles[field.id]}
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <Input
+                      id={field.id}
+                      name={field.id} // Added name attribute
+                      type="text"
+                      value={answers[field.id] || ""}
+                      onChange={(e) => handleQuestionAnswer(field.id, e.target.value)}
+                      placeholder="Enter your answer"
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </CardContent>
         <CardFooter>
-          <Button className="w-full" disabled={uploadedFiles.length < documentTypes.length || !projectName}>
+          <Button
+            className="w-full"
+            type="submit"
+            disabled={fields.length === 0 || !fields.every(isStepComplete)}
+          >
             Create Project
           </Button>
         </CardFooter>
       </Card>
+      </form>
     </div>
   )
 }
