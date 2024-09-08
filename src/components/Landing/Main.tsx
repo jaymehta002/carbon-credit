@@ -7,6 +7,7 @@ import AboutUs from "./AboutUs";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
 import Link from "next/link";
 import { motion, useInView } from "framer-motion";
+import Navbar from "./Navbar";
 
 const AnimatedSection = ({ children }:{children:ReactNode}) => {
   const ref = React.useRef(null);
@@ -26,46 +27,8 @@ const AnimatedSection = ({ children }:{children:ReactNode}) => {
 
 export default function Component() {
   return (
-    <div className="bg-black text-white min-h-screen">
-      <header className="container mx-auto px-4 py-6 flex justify-between items-center">
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <Image
-            src="/logo.png"
-            alt="Boncap Logo"
-            width={40}
-            height={40}
-            className="w-12"
-          />
-        </motion.div>
-        <nav className="hidden md:flex items-center space-x-6">
-          {["Our Proposition", "Investors", "Solutions", "About Us", "Contact"].map((item, index) => (
-            <motion.a
-              key={item}
-              href="#"
-              className="hover:text-green-400"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-            >
-              {item}
-            </motion.a>
-          ))}
-          <SignedIn>
-            <Link className={buttonVariants({ variant: "default" })} href={"/dashboard"}>Dashboard</Link> 
-          </SignedIn>
-          <SignedOut>
-            <Link className={buttonVariants({ variant: "default" })} href={"sign-up"}>Log In</Link>
-          </SignedOut>
-        </nav>
-
-        <Button variant="ghost" size="icon" className="md:hidden">
-          <Menu className="h-6 w-6" />
-        </Button>
-      </header>
+    <div className="bg-black w-full text-white min-h-screen">
+      <Navbar/>
 
       <main>
         <section className="relative h-screen">

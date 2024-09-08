@@ -1,55 +1,79 @@
-// components/Navbar.tsx
 "use client";
-import React, { useState } from "react";
-import { Menu, X } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { motion, useScroll } from "framer-motion";
+import Image from "next/image";
+import Link from "next/link";
+import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { SignedIn, SignedOut } from "@clerk/clerk-react"; // Assuming you're using Clerk for authentication
+import { buttonVariants } from "@/components/ui/button"; // Assuming this is how you're importing your button styles
 
 const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const { scrollY } = useScroll();
+
+  useEffect(() => {
+    return scrollY.onChange((latest) => {
+      setIsScrolled(latest > 0);
+    });
+  }, [scrollY]);
 
   return (
-    <nav className="bg-[#16423C] text-white py-4">
-      <div className="container mx-auto px-4 flex justify-between items-center">
-        <div className="text-2xl font-bold">CarbonCred</div>
-        <div className="hidden md:flex space-x-4">
-          <a href="#hero" className="hover:text-gray-300">
-            Home
-          </a>
-          <a href="#edge" className="hover:text-gray-300">
-            Our Edge
-          </a>
-          <a href="#process" className="hover:text-gray-300">
-            The Process
-          </a>
-          <Button className="bg-white text-[#16423C] hover:bg-opacity-80">
-            Get Started
-          </Button>
-        </div>
-        <div className="md:hidden">
-          <button onClick={() => setIsOpen(!isOpen)}>
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
-      </div>
-      {isOpen && (
-        <div className="md:hidden">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            <a href="#hero" className="block hover:text-gray-300">
-              Home
-            </a>
-            <a href="#edge" className="block hover:text-gray-300">
-              Our Edge
-            </a>
-            <a href="#process" className="block hover:text-gray-300">
-              The Process
-            </a>
-            <Button className="bg-white text-[#16423C] hover:bg-opacity-80 w-full mt-2">
-              Get Started
-            </Button>
-          </div>
-        </div>
-      )}
-    </nav>
+    <motion.header
+      className="fixed w-full px-4 py-6 flex justify-between items-center z-10 transition-colors duration-300"
+      initial={false}
+      animate={{ opacity: 1 }}
+      style={{
+        backgroundColor: isScrolled ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
+        backdropFilter: isScrolled ? 'blur(10px)' : 'none',
+        WebkitBackdropFilter: isScrolled ? 'blur(10px)' : 'none' // Ensures cross-browser support
+      }}
+    >
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <Image
+          src="/logo.png"
+          alt="Boncap Logo"
+          width={40}
+          height={40}
+          className="w-12"
+        />
+      </motion.div>
+
+      <nav className="hidden md:flex items-center space-x-6">
+        {["Our Proposition", "Investors", "Solutions", "About Us", "Contact"].map(
+          (item, index) => (
+            <motion.a
+              key={item}
+              href="#"
+              className="hover:text-green-400"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+            >
+              {item}
+            </motion.a>
+          )
+        )}
+        <SignedIn>
+          <Link className={buttonVariants({ variant: "default" })} href="/dashboard">
+            Dashboard
+          </Link>
+        </SignedIn>
+        <SignedOut>
+          <Link className={buttonVariants({ variant: "default" })} href="/sign-up">
+            Log In
+          </Link>
+        </SignedOut>
+      </nav>
+
+      <Button variant="ghost" size="icon" className="md:hidden">
+        <Menu className="h-6 w-6" />
+      </Button>
+    </motion.header>
   );
 };
 
