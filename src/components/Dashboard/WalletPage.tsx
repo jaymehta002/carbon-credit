@@ -12,8 +12,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowDownIcon, ArrowUpIcon, RefreshCwIcon } from "lucide-react";
 
-export default function WalletPage() {
-  const [balance, setBalance] = useState("12,345.67");
+export default function WalletPage({walletBalance}:{walletBalance:number}) {
+
+  const [balance, setBalance] = useState(walletBalance);
   const [transactions, setTransactions] = useState([
     {
       id: 1,
@@ -34,15 +35,6 @@ export default function WalletPage() {
     { id: 4, type: "sent", amount: "0.2 ETH",from: "Alice", to: "David", date: "2023-05-25" },
   ]);
 
-  const refreshBalance = () => {
-    // In a real application, this would fetch the latest balance from an API
-    setBalance(
-      (parseFloat(balance.replace(",", "")) + Math.random() * 100)
-        .toFixed(2)
-        .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-    );
-  };
-
   return (
     <div className="p-4 bg-background">
       <h1 className="text-2xl font-bold mb-4">Wallet</h1>
@@ -55,9 +47,6 @@ export default function WalletPage() {
           <CardContent>
             <div className="flex items-center justify-between">
               <div className="text-3xl font-bold">${balance}</div>
-              <Button onClick={refreshBalance} size="icon" variant="outline">
-                <RefreshCwIcon className="h-4 w-4" />
-              </Button>
             </div>
           </CardContent>
         </Card>

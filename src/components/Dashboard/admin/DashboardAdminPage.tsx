@@ -1,6 +1,4 @@
-'use client'
-'use client'
-
+"use client"
 import React, { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -19,31 +17,123 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { TrashIcon } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog"
+import { Project, ProjectCategory, ProjectStatus, User } from '@prisma/client'
+import { useToast } from "@/hooks/use-toast"
+import { updateProjectStatus,updateUserTokenBalance } from '@/app/dashboard/actions'
 
-// Placeholder data for projects
-const initialProjects = [
-  { id: 1, name: "Plantation & Reforestation", date: "2023-06-01", status: "In Progress", type: "Environmental" },
-  { id: 2, name: "Sustainable Farming", date: "2023-05-15", status: "Completed", type: "Agricultural" },
-  { id: 3, name: "Renewable Energy", date: "2023-04-22", status: "Pending", type: "Energy" },
-  { id: 4, name: "Solar Power Installation", date: "2023-03-10", status: "In Progress", type: "Energy" },
+const statusOptions = [
+  "PENDING", "INITIALIZED", "PROCESSING", "COMPLETED",
 ]
 
-const statusOptions = ["Pending", "In Progress", "Completed"]
+interface DashboardPageProps {
+  fetchedProjects: (Project & { projectCategory: ProjectCategory, user: User })[];
+}
 
-export default function DashboardAdminPage() {
-  const [projects, setProjects] = useState(initialProjects)
+export default function DashboardAdminPage({ fetchedProjects }: DashboardPageProps) {
+  const [projects, setProjects] = useState(fetchedProjects)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [tokenAmount, setTokenAmount] = useState('')
+  const [currentProject, setCurrentProject] = useState<string | null>(null)
+  const { toast } = useToast()
 
-  const handleDelete = (id: number) => {
-    console.log(`Deleting project with id: ${id}`)
-    setProjects(projects.filter(project => project.id !== id))
+  const handleStatusChange = async (id: string, newStatus: ProjectStatus) => {
+    const toastId = toast({
+      title: "Updating Status",
+      description: "Please wait...",
+    })
+
+    try {
+      const result = await updateProjectStatus(id, newStatus)
+      
+      if (result.success) {
+        setProjects(projects.map(project =>
+          project.id === id ? { ...project, status: newStatus } : project
+        ))
+        
+        toast({
+          title: "Status Updated",
+          description: `Project status updated to ${newStatus}`,
+          variant: "default",
+        })
+
+        if (newStatus === "COMPLETED") {
+          setCurrentProject(id)
+          setIsModalOpen(true)
+        }
+      } else {
+        throw new Error(result.error)
+      }
+    } catch (error) {
+      console.error('Failed to update project status:', error)
+      toast({
+        title: "Error",
+        description: "Failed to update project status",
+        variant: "destructive",
+      })
+    }
   }
 
-  const handleStatusChange = (id: number, newStatus: string) => {
-    console.log(`Updating project ${id} status to: ${newStatus}`)
-    setProjects(projects.map(project => 
-      project.id === id ? { ...project, status: newStatus } : project
-    ))
+  const handleSendTokens = async () => {
+    if (!currentProject || !tokenAmount) {
+      toast({
+        title: "Error",
+        description: "Please enter a valid token amount",
+        variant: "destructive",
+      })
+      return
+    }
+
+    const project = projects.find(p => p.id === currentProject)
+    if (!project) {
+      toast({
+        title: "Error",
+        description: "Project not found",
+        variant: "destructive",
+      })
+      return
+    }
+
+    const toastId = toast({
+      title: "Updating Token Balance",
+      description: "Please wait...",
+    })
+
+    try {
+      const result = await updateUserTokenBalance(project.user.id, project.user.tokenBalance + parseFloat(tokenAmount))
+      
+      if (result.success) {
+        setProjects(projects.map(p =>
+          p.id === currentProject ? { ...p, user: { ...p.user, tokenBalance: result.data?.tokenBalance ?? p.user.tokenBalance } } : p
+        ))
+        
+        toast({
+          title: "Token Balance Updated",
+          description: `${tokenAmount} tokens added to user's balance`,
+          variant: "default",
+        })
+
+        setIsModalOpen(false)
+        setTokenAmount('')
+        setCurrentProject(null)
+      } else {
+        throw new Error(result.error)
+      }
+    } catch (error) {
+      console.error('Failed to update token balance:', error)
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to update token balance",
+        variant: "destructive",
+      })
+    }
   }
 
   return (
@@ -60,21 +150,19 @@ export default function DashboardAdminPage() {
               <TableRow>
                 <TableHead>Name</TableHead>
                 <TableHead>Date</TableHead>
-                <TableHead>Type</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>User Token Balance</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {projects.map((project) => (
                 <TableRow key={project.id}>
-                  <TableCell className="font-medium">{project.name}</TableCell>
-                  <TableCell>{project.date}</TableCell>
-                  <TableCell>{project.type}</TableCell>
+                  <TableCell className="font-medium">{project.projectCategory.name}</TableCell>
+                  <TableCell>{project.createdAt.toLocaleDateString()}</TableCell>
                   <TableCell>
                     <Select
                       defaultValue={project.status}
-                      onValueChange={(value) => handleStatusChange(project.id, value)}
+                      onValueChange={(value) => handleStatusChange(project.id, value as ProjectStatus)}
                     >
                       <SelectTrigger className="w-[140px]">
                         <SelectValue placeholder="Select status" />
@@ -88,22 +176,32 @@ export default function DashboardAdminPage() {
                       </SelectContent>
                     </Select>
                   </TableCell>
-                  <TableCell className="text-right">
-                    <Button 
-                      variant="destructive" 
-                      size="sm"
-                      onClick={() => handleDelete(project.id)}
-                    >
-                      <TrashIcon className="h-4 w-4 mr-2" />
-                      Delete
-                    </Button>
-                  </TableCell>
+                  <TableCell>{project.user.tokenBalance}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </CardContent>
       </Card>
+
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add Tokens to User Balance</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <Input
+              type="number"
+              placeholder="Enter token amount"
+              value={tokenAmount}
+              onChange={(e) => setTokenAmount(e.target.value)}
+            />
+          </div>
+          <DialogFooter>
+            <Button onClick={handleSendTokens}>Add Tokens</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

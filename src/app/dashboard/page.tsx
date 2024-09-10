@@ -11,9 +11,15 @@ const Dashboard = async() => {
   if(!userId){
     return <><h1>Unauthenticated</h1></>
   }
-
+  
   if (admin) {
-    return <DashboardAdminPage />;
+    const adminProjects = await prisma.project.findMany({
+      include: {
+        projectCategory: true,
+        user: true,
+      },
+    });
+    return <DashboardAdminPage fetchedProjects={adminProjects}/>;
   }
   const projects = await prisma.project.findMany({
     where: {
