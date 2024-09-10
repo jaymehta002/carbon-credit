@@ -22,6 +22,7 @@ import { Progress } from "@/components/ui/progress"
 import { UploadIcon, CheckCircleIcon } from "lucide-react"
 import { ProjectCategory,Field } from "@prisma/client"
 import { addProjectUserSide } from "@/app/dashboard/addproject/actions"
+import { useToast } from "@/hooks/use-toast"
 
 
 
@@ -30,7 +31,9 @@ export default function AddProjectUserPage({
 }: {
   fetchedProjectCategories: (ProjectCategory & { fields: Field[] })[]
 }) {
-  const [fields, setFields] = useState<Field[]>([])
+  const { toast } = useToast()
+  const [fields, setFields] = useState<Field[]>([]);
+  const [loading, setLoading] = useState(false);
   const [projectType, setProjectType] = useState("")
   const [uploadedFiles, setUploadedFiles] = useState<Record<string, string>>({})
   const [answers, setAnswers] = useState<Record<string, string>>({})
@@ -74,23 +77,63 @@ export default function AddProjectUserPage({
     return (completedSteps / fields.length) * 100
   }
 
+  const uploadFile = async (file:any) => {
+    const formData = new FormData();
+    formData.append('file', file);
+  
+    const response = await fetch('/api/upload', {
+      method: 'POST',
+      body: formData,
+    });
+  
+    if (!response.ok) {
+      throw new Error('File upload failed');
+    }
+  
+    const data = await response.json();
+    return data.publicId;
+  };
+
   const handleProjectFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    setLoading(true);
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
   
-    // Handle file uploads first
-    for (const field of fields) {
-      if (field.type === 'FILE') {
-        const file = formData.get(field.id) as File;
-        if (file && file.size > 0) {
-          const fileUrl = "file url";
-          formData.set(field.id, fileUrl);
+    // Object to store file URLs
+    const fileUrls: Record<string, string> = {};
+  
+    try {
+      // Handle file uploads first
+      for (const field of fields) {
+        if (field.type === 'FILE') {
+          const file = formData.get(field.id) as File;
+          if (file && file.size > 0) {
+            const uploadedFileUrl = await uploadFile(file);
+            console.log("🚀 ~ handleProjectFormSubmit ~ uploadedFileUrl:", uploadedFileUrl)
+            fileUrls[field.id] = uploadedFileUrl;
+          }
         }
       }
-    }
   
-    const result = await addProjectUserSide(formData);
-    // Handle result...
+      // Call addProjectUserSide with formData and fileUrls
+      const result = await addProjectUserSide(formData, fileUrls);
+  
+      if (result.success) {
+        setLoading(false);
+        toast({
+          title: 'Project added successfully',
+        });
+      } else {
+        throw new Error(result.error || 'Failed to add project');
+      }
+    } catch (error) {
+      setLoading(false);
+      toast({
+        variant: 'destructive',
+        title: 'Something went wrong',
+        description: (error as Error).message,
+      });
+    }
   };
 
   return (
@@ -188,9 +231,9 @@ export default function AddProjectUserPage({
           <Button
             className="w-full"
             type="submit"
-            disabled={fields.length === 0 || !fields.every(isStepComplete)}
+            disabled={fields.length === 0 || !fields.every(isStepComplete) || loading}
           >
-            Create Project
+            {loading?"Creating Project":"Create Project"}
           </Button>
         </CardFooter>
       </Card>

@@ -29,7 +29,7 @@ export const createProjectCategory = async (name:string, fields:Omit<Field, 'id'
     }
 };
 
-export const addProjectUserSide = async (formData: FormData) => {
+export const addProjectUserSide = async (formData: FormData, fileUrls: Record<string, string>) => {
   try {
     // Get the current user's ID using Clerk
     const { userId } = auth();
@@ -51,19 +51,23 @@ export const addProjectUserSide = async (formData: FormData) => {
       throw new Error('Project category not found');
     }
 
+    // Prepare the fields data
+    const createProjectFields = projectCategory.fields.map(field => {
+      const answer = formData.get(field.id);
+      return {
+        field: { connect: { id: field.id } },
+        answer: answer ? String(answer) : null, // Convert to string or null
+        fileUrl: field.type === 'FILE' ? fileUrls[field.id] || null : null,
+      };
+    });
+
     // Create the project
     const project = await prisma.project.create({
       data: {
         projectCategory: { connect: { id: projectCategory.id } },
         user: { connect: { id: userId } },
         status: 'PENDING',
-        fields: {
-          create: projectCategory.fields.map(field => ({
-            field: { connect: { id: field.id } },
-            answer: formData.get(field.id) as string,
-            fileUrl: field.type === 'FILE' ? 'file-url-here' : null, // Replace with actual file upload logic
-          })),
-        },
+        fields: { create: createProjectFields },
       },
     });
 

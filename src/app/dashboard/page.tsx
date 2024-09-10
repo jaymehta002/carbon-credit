@@ -1,13 +1,30 @@
 import DashboardAdminPage from "@/components/Dashboard/admin/DashboardAdminPage";
 import DashboardPage from "@/components/Dashboard/DashboardPage";
+import prisma from "@/utils/db";
 import { auth } from '@clerk/nextjs/server'
 import React from "react";
 
-const Dashboard = () => {
-  const { sessionClaims } = auth()
+const Dashboard = async() => {
+  const { sessionClaims,userId } = auth();
   const admin = sessionClaims?.metadata.role==="admin";
 
-  return <>{admin ? <DashboardAdminPage /> : <DashboardPage />}</>;
+  if(!userId){
+    return <><h1>Unauthenticated</h1></>
+  }
+
+  if (admin) {
+    return <DashboardAdminPage />;
+  }
+  const projects = await prisma.project.findMany({
+    where: {
+      userId: userId,
+    },
+    include: {
+      projectCategory: true,
+    },
+  });
+
+  return  <DashboardPage fetchedProjects={projects}/>;
 };
 
 export default Dashboard;
