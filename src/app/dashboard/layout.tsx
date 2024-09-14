@@ -6,10 +6,11 @@ import {
 } from "@/components/Dashboard/sidebar";
 import { cn } from "@/lib/utils";
 import { UserButton } from "@clerk/nextjs";
-import { LayoutDashboard, User, Wallet, Plus } from "lucide-react";
+import { LayoutDashboard, User, Wallet, Plus, CircleDollarSign } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useState } from "react";
+import Image from "next/image";
 
 const links = [
   {
@@ -40,6 +41,13 @@ const links = [
       <User className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
     ),
   },
+  {
+    label: "Exchange",
+    href: "/dashboard/exchange",
+    icon: (
+      <CircleDollarSign className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+    ),
+  },
 ];
 
 const Logo = () => {
@@ -48,7 +56,7 @@ const Logo = () => {
       href="#"
       className="font-normal flex space-x-2 items-center text-sm text-black py-1 relative z-20"
     >
-      <div className="h-5 w-6 bg-black dark:bg-white rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
+      <Image src="/logo.png" alt="logo" width={24} height={24} />
       <motion.span
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -66,7 +74,7 @@ const LogoIcon = () => {
       href="#"
       className="font-normal flex space-x-2 items-center text-sm text-black py-1 relative z-20"
     >
-      <div className="h-5 w-6 bg-black dark:bg-white rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
+      <Image src="/logo.png" alt="logo" width={24} height={24} />
     </Link>
   );
 };
