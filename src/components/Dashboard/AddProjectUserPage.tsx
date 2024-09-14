@@ -152,6 +152,10 @@ export default function AddProjectUserPage({
       const result = await addProjectUserSide(formData, fileUrls);
   
       if (result.success) {
+        // Add the new project to local state
+        if (result.project) { // Check if result.project is defined
+          setProjects([...projects, result.project]); // Update local state with the new project
+        }
         setLoading(false);
         toast({
           title: 'Project added successfully',
@@ -169,9 +173,11 @@ export default function AddProjectUserPage({
     }
   };
 
+  console.log("🚀 ~ projects:", projects)
+
   return (
-    <div className="container mx-auto px-4 py-8">
-      <form onSubmit={handleProjectFormSubmit}>
+    <div className="flex flex-col md:flex-row w-full mx-auto px-4 py-8">
+      <form onSubmit={handleProjectFormSubmit} className="md:w-1/2 w-full">
       <Card className="max-w-2xl mx-auto">
         <CardHeader>
           <CardTitle className="text-2xl font-bold">Add New Project</CardTitle>
@@ -273,7 +279,7 @@ export default function AddProjectUserPage({
       </form>
 
       {/* Projects */}
-      <Card className="mt-4">
+      <Card className="md:w-1/2 w-full mt-4 md:mt-0">
         <CardHeader>
           <CardTitle>Your Projects</CardTitle>
         </CardHeader>

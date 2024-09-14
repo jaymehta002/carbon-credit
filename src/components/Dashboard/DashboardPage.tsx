@@ -55,6 +55,7 @@ export default function DashboardPage({ fetchedProjects }: DashboardPageProps) {
               <TableRow>
                 <TableHead>Name</TableHead>
                 <TableHead>Date</TableHead>
+                <TableHead>Status</TableHead>
                 <TableHead>Action</TableHead>
               </TableRow>
             </TableHeader>
@@ -63,6 +64,7 @@ export default function DashboardPage({ fetchedProjects }: DashboardPageProps) {
                 <TableRow key={project.id}>
                   <TableCell className="font-medium">{project.projectCategory.name}</TableCell> 
                   <TableCell>{project.createdAt.toLocaleDateString()}</TableCell>
+                  <TableCell>{project.status}</TableCell>
                   <TableCell>
                     <Button variant="destructive" className="gap-2" onClick={() => handleDelete(project.id)}>
                       <Trash2 size={"16px"}/>
