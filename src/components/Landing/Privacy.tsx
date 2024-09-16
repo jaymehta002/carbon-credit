@@ -33,7 +33,7 @@ const PrivacyPolicy = () => {
           >
             netzerosolutions.in
           </a>{" "}
-          (the "Website") or engage with our services.
+          (the &quot;Website&quot;) or engage with our services.
         </p>
 
         <p className="mb-4">
