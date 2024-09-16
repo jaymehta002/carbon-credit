@@ -5,10 +5,10 @@ const PrivacyPolicy = () => {
   return (
     <div>
       <Head>
-        <title>Privacy Policy | Terrasols Solutions Private Limited</title>
+        <title>Privacy Policy | NetZero Solutions Private Limited</title>
         <meta
           name="description"
-          content="Privacy Policy of Terrasols Solutions Private Limited"
+          content="Privacy Policy of NetZero Solutions Private Limited"
         />
       </Head>
 
@@ -18,18 +18,17 @@ const PrivacyPolicy = () => {
           <strong>Effective Date: 10/08/2024</strong>
         </p>
         <p>
-          Terrasols Solutions Private Limited ({`"we," "our," "us"`}) is
-          committed to protecting the privacy and security of our users&#39;
-          personal information. This Privacy Policy outlines how we collect,
-          use, disclose, and safeguard your information when you visit our
-          website{" "}
+          NetZero Solutions Private Limited ({`"we," "our," "us"`}) is committed
+          to protecting the privacy and security of our users&#39; personal
+          information. This Privacy Policy outlines how we collect, use,
+          disclose, and safeguard your information when you visit our website{" "}
           <a
-            href="http://www.terrasols.com"
+            href="http://www.NetZero.com"
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-500 underline"
           >
-            www.terrasols.com
+            netzerosolutions.in
           </a>{" "}
           (the “Website”) or engage with our services.
         </p>
@@ -223,7 +222,7 @@ const PrivacyPolicy = () => {
           your personal information, please contact us at:
         </p>
         <address className="not-italic mb-4">
-          <strong>Terrasols Solutions Private Limited</strong>
+          <strong>NetZero Solutions Private Limited</strong>
           <br />
           Email:{" "}
           <a
@@ -240,7 +239,7 @@ const PrivacyPolicy = () => {
 
         <p>
           By using our Website, you consent to our Privacy Policy. Thank you for
-          trusting Terrasols Solutions Private Limited with your information.
+          trusting NetZero Solutions Private Limited with your information.
         </p>
       </div>
     </div>
