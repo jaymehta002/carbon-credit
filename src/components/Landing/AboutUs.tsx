@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { motion, useInView } from "framer-motion";
+import { WobbleCard } from "../ui/wobble-card";
 
 // AnimatedSection component definition
 const AnimatedSection = ({ children, delay = 0 }:{children:ReactNode,delay?:number}) => {
@@ -24,27 +25,28 @@ const AnimatedSection = ({ children, delay = 0 }:{children:ReactNode,delay?:numb
 
 const AboutUs = () => {
   return (
+  
     <section className="bg-black py-24">
       <div className="container mx-auto px-4">
         {/* Hero Section wrapped in AnimatedSection */}
         <AnimatedSection>
-          <div className="relative h-[600px] flex items-center justify-center">
-            <Image
-              src="/hero.jpg"
-              alt="Sustainable project in action"
-              layout="fill"
-              objectFit="cover"
-              className="rounded-lg shadow-xl"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-black opacity-75"></div>
-            <div className="text-center z-10 text-white">
-              <h2 className="text-6xl font-extrabold mb-6">Net Zero Solutions</h2>
-              <p className="text-2xl max-w-2xl mx-auto">
-                Leading the global transition towards sustainability with
-                innovative Net Zero strategies and cutting-edge technologies.
-              </p>
-            </div>
+        <WobbleCard className="h-[600px] relative  flex items-center justify-center">
+          <Image
+            src="/hero.jpg"
+            alt="Sustainable project in action"
+            layout="fill"
+            objectFit="cover"
+            className="rounded-lg shadow-xl"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-black opacity-75"></div>
+          <div className="text-center z-10 text-white">
+            <h2 className="text-6xl font-extrabold mb-6">Net Zero Solutions</h2>
+            <p className="text-2xl max-w-2xl mx-auto">
+              Leading the global transition towards sustainability with
+              innovative Net Zero strategies and cutting-edge technologies.
+            </p>
           </div>
+        </WobbleCard>
         </AnimatedSection>
 
         {/* Split Screen Section */}
