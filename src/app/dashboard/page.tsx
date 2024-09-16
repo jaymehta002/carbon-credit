@@ -1,17 +1,21 @@
 import DashboardAdminPage from "@/components/Dashboard/admin/DashboardAdminPage";
 import DashboardPage from "@/components/Dashboard/DashboardPage";
 import prisma from "@/utils/db";
-import { auth } from '@clerk/nextjs/server'
+import { auth } from "@clerk/nextjs/server";
 import React from "react";
 
-const Dashboard = async() => {
-  const { sessionClaims,userId } = auth();
-  const admin = sessionClaims?.metadata.role==="admin";
+const Dashboard = async () => {
+  const { sessionClaims, userId } = auth();
+  const admin = sessionClaims?.metadata.role === "admin";
 
-  if(!userId){
-    return <><h1>Unauthenticated</h1></>
+  if (!userId) {
+    return (
+      <>
+        <h1>Unauthenticated</h1>
+      </>
+    );
   }
-  
+
   if (admin) {
     const adminProjects = await prisma.project.findMany({
       include: {
@@ -19,7 +23,7 @@ const Dashboard = async() => {
         user: true,
       },
     });
-    return <DashboardAdminPage fetchedProjects={adminProjects}/>;
+    return <DashboardAdminPage fetchedProjects={adminProjects} />;
   }
   const projects = await prisma.project.findMany({
     where: {
@@ -30,7 +34,7 @@ const Dashboard = async() => {
     },
   });
 
-  return  <DashboardPage fetchedProjects={projects}/>;
+  return <DashboardPage fetchedProjects={projects} />;
 };
 
 export default Dashboard;

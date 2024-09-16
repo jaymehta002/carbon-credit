@@ -7,7 +7,6 @@ import React from "react";
 const AddProject = async () => {
   const { sessionClaims } = auth();
   const admin = sessionClaims?.metadata.role === "admin";
-
   if (admin) {
     const projectCategories = await prisma.projectCategory.findMany();
     console.log("🚀 ~ AddProject ~ projectCategories:", projectCategories);
@@ -15,12 +14,16 @@ const AddProject = async () => {
   }
 
   const projectCategoriesWithFeilds = await prisma.projectCategory.findMany({
-    include:{
-      fields:true
-    }
+    include: {
+      fields: true,
+    },
   });
-  
-  return <AddProjectUserPage fetchedProjectCategories={projectCategoriesWithFeilds} />;
+
+  return (
+    <AddProjectUserPage
+      fetchedProjectCategories={projectCategoriesWithFeilds}
+    />
+  );
 };
 
 export default AddProject;
