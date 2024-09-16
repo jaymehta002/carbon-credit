@@ -27,7 +27,8 @@ import {
 } from "@/components/ui/dialog"
 import { Project, ProjectCategory, ProjectStatus, User } from '@prisma/client'
 import { useToast } from "@/hooks/use-toast"
-import { updateProjectStatus,updateUserTokenBalance } from '@/app/dashboard/actions'
+import { deleteProject, updateProjectStatus,updateUserTokenBalance } from '@/app/dashboard/actions'
+import { Trash } from 'lucide-react'
 
 const statusOptions = [
   "PENDING", "INITIALIZED", "PROCESSING", "COMPLETED",
@@ -38,7 +39,8 @@ interface DashboardPageProps {
 }
 
 export default function DashboardAdminPage({ fetchedProjects }: DashboardPageProps) {
-  const [projects, setProjects] = useState(fetchedProjects)
+    console.log("🚀 ~ DashboardAdminPage ~ fetchedProjects:", fetchedProjects)
+    const [projects, setProjects] = useState(fetchedProjects)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [tokenAmount, setTokenAmount] = useState('')
   const [currentProject, setCurrentProject] = useState<string | null>(null)
@@ -136,6 +138,23 @@ export default function DashboardAdminPage({ fetchedProjects }: DashboardPagePro
     }
   }
 
+  const handleDelete = async(id: string) => {
+    console.log("🚀 ~ handleDelete ~ id:", id)
+    const res=await deleteProject(id);
+    if(res.success){
+      toast({
+        title:"Deleted Successfully",
+      })
+      setProjects(projects.filter(project => project.id !== id)) // Update state to remove project
+    }
+    else{
+      toast({
+        variant:"destructive",
+        title:"Error while deleting project"
+      })
+    }
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
@@ -149,15 +168,18 @@ export default function DashboardAdminPage({ fetchedProjects }: DashboardPagePro
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
+                <TableHead>User Email</TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>User Token Balance</TableHead>
+                <TableHead>Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {projects.map((project) => (
                 <TableRow key={project.id}>
                   <TableCell className="font-medium">{project.projectCategory.name}</TableCell>
+                  <TableCell className="font-medium">{project.user.email}</TableCell>
                   <TableCell>{project.createdAt.toLocaleDateString()}</TableCell>
                   <TableCell>
                     <Select
@@ -177,6 +199,12 @@ export default function DashboardAdminPage({ fetchedProjects }: DashboardPagePro
                     </Select>
                   </TableCell>
                   <TableCell>{project.user.tokenBalance}</TableCell>
+                  <TableCell>
+                    <Button className='gap-2' variant={"destructive"} onClick={() => handleDelete(project.id)}>
+                      <Trash size={"16px"}/>
+                      Delete
+                      </Button> {/* Add delete button */}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

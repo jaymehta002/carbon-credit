@@ -40,3 +40,25 @@ export async function updateUserTokenBalance(userId: string, tokenAmount: number
       return { success: false, error: error instanceof Error ? error.message : 'An unknown error occurred' };
     }
   }
+
+
+  export async function deleteProject(projectId: string) {
+    try {
+      // Delete associated ProjectFields
+      await prisma.projectField.deleteMany({
+        where: { projectId: projectId },
+      });
+  
+      // Delete the Project
+      const deletedProject = await prisma.project.delete({
+        where: { id: projectId },
+      });
+  
+      revalidatePath('/projects');
+  
+      return { success: true, message: 'Project deleted successfully', project: deletedProject };
+    } catch (error) {
+      console.error('Error deleting project:', error);
+      return { success: false, message: 'Failed to delete project' };
+    }
+  }

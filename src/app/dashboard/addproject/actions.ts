@@ -61,13 +61,21 @@ export const addProjectUserSide = async (formData: FormData, fileUrls: Record<st
       };
     });
 
-    // Create the project
+    // Create the project and return the full data
     const project = await prisma.project.create({
       data: {
         projectCategory: { connect: { id: projectCategory.id } },
         user: { connect: { id: userId } },
         status: 'PENDING',
         fields: { create: createProjectFields },
+      },
+      include: {
+        projectCategory: true,
+        fields: {
+          include: {
+            field: true,
+          },
+        },
       },
     });
 

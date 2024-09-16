@@ -18,18 +18,29 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 import { Progress } from "@/components/ui/progress"
-import { UploadIcon, CheckCircleIcon } from "lucide-react"
-import { ProjectCategory,Field } from "@prisma/client"
+import { UploadIcon, CheckCircleIcon, Trash2 } from "lucide-react"
+import { ProjectCategory,Field, Project } from "@prisma/client"
 import { addProjectUserSide } from "@/app/dashboard/addproject/actions"
 import { useToast } from "@/hooks/use-toast"
+import { deleteProject } from "@/app/dashboard/actions"
 
 
 
 export default function AddProjectUserPage({
   fetchedProjectCategories,
+  fetchedProjects
 }: {
-  fetchedProjectCategories: (ProjectCategory & { fields: Field[] })[]
+  fetchedProjectCategories: (ProjectCategory & { fields: Field[] })[];
+  fetchedProjects:(Project & { projectCategory: ProjectCategory })[]; // Updated to include projectCategory
 }) {
   const { toast } = useToast()
   const [fields, setFields] = useState<Field[]>([]);
@@ -37,6 +48,28 @@ export default function AddProjectUserPage({
   const [projectType, setProjectType] = useState("")
   const [uploadedFiles, setUploadedFiles] = useState<Record<string, string>>({})
   const [answers, setAnswers] = useState<Record<string, string>>({})
+
+
+  const [projects, setProjects] = useState(fetchedProjects); // Add state for projects
+
+  const handleDelete =async (id: string) => {
+    console.log("🚀 ~ handleDelete ~ id:", id)
+    const res=await deleteProject(id);
+    if(res.success){
+      toast({
+        title:"Deleted Successfully",
+      })
+      setProjects(projects.filter(project => project.id !== id)); // Update state to remove project
+    }
+    else{
+      toast({
+        variant:"destructive",
+        title:"Error while deleting project"
+      })
+    }
+  };
+
+  console.log("🚀 ~ DashboardPage ~ fetchedProjects:", fetchedProjects);
 
   useEffect(() => {
     const filteredProject = fetchedProjectCategories.find(
@@ -119,6 +152,10 @@ export default function AddProjectUserPage({
       const result = await addProjectUserSide(formData, fileUrls);
   
       if (result.success) {
+        // Add the new project to local state
+        if (result.project) { // Check if result.project is defined
+          setProjects([...projects, result.project]); // Update local state with the new project
+        }
         setLoading(false);
         toast({
           title: 'Project added successfully',
@@ -136,9 +173,11 @@ export default function AddProjectUserPage({
     }
   };
 
+  console.log("🚀 ~ projects:", projects)
+
   return (
-    <div className="container mx-auto px-4 py-8">
-      <form onSubmit={handleProjectFormSubmit}>
+    <div className="flex flex-col md:flex-row w-full mx-auto px-4 py-8">
+      <form onSubmit={handleProjectFormSubmit} className="md:w-1/2 w-full">
       <Card className="max-w-2xl mx-auto">
         <CardHeader>
           <CardTitle className="text-2xl font-bold">Add New Project</CardTitle>
@@ -238,6 +277,38 @@ export default function AddProjectUserPage({
         </CardFooter>
       </Card>
       </form>
+
+      {/* Projects */}
+      <Card className="md:w-1/2 w-full mt-4 md:mt-0">
+        <CardHeader>
+          <CardTitle>Your Projects</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead>Action</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {projects.map((project) => ( // Use state variable
+                <TableRow key={project.id}>
+                  <TableCell className="font-medium">{project.projectCategory.name}</TableCell> 
+                  <TableCell>{project.createdAt.toLocaleDateString()}</TableCell>
+                  <TableCell>
+                    <Button variant="destructive" className="gap-2" onClick={() => handleDelete(project.id)}>
+                      <Trash2 size={"16px"}/>
+                      Delete</Button> {/* Add delete button */}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
     </div>
   )
 }
