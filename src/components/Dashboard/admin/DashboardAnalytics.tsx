@@ -14,18 +14,14 @@ export default function DashboardAnalytics() {
         <div className="lg:col-span-1 grid gap-4">
           <Card>
             <CardHeader>
-              <CardTitle>Project Categories</CardTitle>
-              <CardDescription>Breakdown of projects per category</CardDescription>
+              <CardTitle>Projects</CardTitle>
+              <CardDescription>Breakdown of projects</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <div className="text-4xl font-bold">24</div>
-                  <div className="text-muted-foreground">Total Categories</div>
-                </div>
-                <div>
-                  <div className="text-4xl font-bold">8.3</div>
-                  <div className="text-muted-foreground">Avg. Fields per Category</div>
+                  <div className="text-muted-foreground">Total Projects</div>
                 </div>
               </div>
               <div className="mt-4">

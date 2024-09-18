@@ -649,7 +649,7 @@ export default function Component() {
 
       <footer className="bg-black py-12">
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-5 gap-8">
             <div>
               <Image
                 src="/logo.png"
@@ -685,6 +685,16 @@ export default function Component() {
                 <li>LinkedIn</li>
                 <li>Twitter</li>
                 <li>Instagram</li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-lg font-semibold mb-4">Compony</h4>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li>
+                  <Link href="/privacy">
+                    Privacy Policy
+                  </Link>
+                  </li>
               </ul>
             </div>
           </div>
