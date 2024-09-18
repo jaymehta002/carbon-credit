@@ -99,8 +99,8 @@ export default function AdminProjectFormCreator({
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-8">
-      <Card className="max-w-2xl mx-auto">
+    <div className="flex mx-auto px-4 py-8">
+      <Card className="w-1/2">
         <CardHeader>
           <CardTitle className="text-2xl font-bold">
             Create Project Form
@@ -180,7 +180,7 @@ export default function AdminProjectFormCreator({
         </CardFooter>
       </Card>
 
-      <Card className="mt-2">
+      <Card className="w-1/2">
         <CardHeader>
           <CardTitle className="text-2xl font-bold">
             Project Categories
@@ -220,6 +220,7 @@ export default function AdminProjectFormCreator({
           </Table>
         </CardContent>
       </Card>
+
     </div>
   );
 }

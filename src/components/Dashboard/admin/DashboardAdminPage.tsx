@@ -29,6 +29,7 @@ import { Project, ProjectCategory, ProjectStatus, User } from '@prisma/client'
 import { useToast } from "@/hooks/use-toast"
 import { deleteProject, updateProjectStatus,updateUserTokenBalance } from '@/app/dashboard/actions'
 import { Trash } from 'lucide-react'
+import DashboardAnalytics from './DashboardAnalytics'
 
 const statusOptions = [
   "PENDING", "INITIALIZED", "PROCESSING", "COMPLETED",
@@ -159,6 +160,8 @@ export default function DashboardAdminPage({ fetchedProjects }: DashboardPagePro
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
       
+      <DashboardAnalytics/>
+
       <Card>
         <CardHeader>
           <CardTitle>Recent Projects</CardTitle>
