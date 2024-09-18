@@ -17,13 +17,25 @@ const Dashboard = async () => {
   }
 
   if (admin) {
+    const totalUsers = await prisma.user.count();
+    const totalProjects = await prisma.project.count();
+    const totalProjectCategories = await prisma.projectCategory.count();
+
     const adminProjects = await prisma.project.findMany({
       include: {
         projectCategory: true,
         user: true,
       },
     });
-    return <DashboardAdminPage fetchedProjects={adminProjects} />;
+
+    return (
+      <DashboardAdminPage
+        fetchedProjects={adminProjects}
+        totalUsers={totalUsers}
+        totalProjects={totalProjects}
+        totalProjectCategories={totalProjectCategories}
+      />
+    );
   }
   const projects = await prisma.project.findMany({
     where: {

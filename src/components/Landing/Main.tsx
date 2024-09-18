@@ -1,15 +1,12 @@
 "use client";
-import React, { ReactNode } from "react";
-import Image from "next/image";
-import { ArrowRight, Menu } from "lucide-react";
-import { Button, buttonVariants } from "@/components/ui/button";
-import AboutUs from "./AboutUs";
-import { SignedIn, SignedOut } from "@clerk/nextjs";
-import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import { motion, useInView } from "framer-motion";
-import Navbar from "./Navbar";
 import dynamic from "next/dynamic";
+import Image from "next/image";
+import Link from "next/link";
+import React, { ReactNode } from "react";
 import { Spotlight } from "../Spotlight";
+import Navbar from "./Navbar";
 const World = dynamic(() => import("../ui/globe").then((m) => m.World), {
   ssr: false,
 });

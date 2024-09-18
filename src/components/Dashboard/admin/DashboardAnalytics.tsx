@@ -1,10 +1,25 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ResponsiveBar } from "@nivo/bar"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { ResponsiveBar } from "@nivo/bar";
+import { CoinsIcon, ProjectorIcon, UsersIcon } from "lucide-react";
 
-export default function DashboardAnalytics() {
+export default function DashboardAnalytics({
+  totalUsers,
+  totalProjects,
+  totalProjectCategories,
+}: {
+  totalUsers: number;
+  totalProjects: number;
+  totalProjectCategories: number;
+}) {
   return (
     <div className="flex bg-muted/40 mb-4">
-      <div className="grid flex-1 items-start gap-4 sm:py-0 md:gap-8 lg:grid-cols-2 xl:grid-cols-2">
+      {/* <div className="grid flex-1 items-start gap-4 sm:py-0 md:gap-8 lg:grid-cols-2 xl:grid-cols-2">
         <div className="lg:col-span-1 grid gap-4">
           <Card>
             <CardHeader>
@@ -24,12 +39,42 @@ export default function DashboardAnalytics() {
             </CardContent>
           </Card>
         </div>
+      </div> */}
+
+      <div className="grid gap-6 md:grid-cols-3 w-full">
+        <Card>
+          <CardHeader className="flex flex-row items-center gap-4">
+            <UsersIcon className="w-8 h-8" />
+            <div className="grid gap-1">
+              <CardTitle>Total Users</CardTitle>
+              <CardDescription>{totalUsers}</CardDescription>
+            </div>
+          </CardHeader>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center gap-4">
+            <ProjectorIcon className="w-8 h-8" />
+            <div className="grid gap-1">
+              <CardTitle>Total Projects</CardTitle>
+              <CardDescription>{totalProjects}</CardDescription>
+            </div>
+          </CardHeader>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center gap-4">
+            <CoinsIcon className="w-8 h-8" />
+            <div className="grid gap-1">
+              <CardTitle>Total Project Categories</CardTitle>
+              <CardDescription>{totalProjectCategories}</CardDescription>
+            </div>
+          </CardHeader>
+        </Card>
       </div>
     </div>
-  )
+  );
 }
 
-function BarChart(props:any) {
+function BarChart(props: any) {
   return (
     <div {...props}>
       <ResponsiveBar
@@ -80,5 +125,5 @@ function BarChart(props:any) {
         ariaLabel="A bar chart showing data"
       />
     </div>
-  )
+  );
 }
