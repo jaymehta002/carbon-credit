@@ -9,6 +9,7 @@ import Link from "next/link";
 import { motion, useInView } from "framer-motion";
 import Navbar from "./Navbar";
 import dynamic from "next/dynamic";
+import { Spotlight } from "../Spotlight";
 const World = dynamic(() => import("../ui/globe").then((m) => m.World), {
   ssr: false,
 });
@@ -16,7 +17,6 @@ const World = dynamic(() => import("../ui/globe").then((m) => m.World), {
 const AnimatedSection = ({ children }: { children: ReactNode }) => {
   const ref = React.useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.3 });
-
   return (
     <motion.div
       ref={ref}
@@ -421,36 +421,47 @@ export default function Component() {
 
       <main>
         <section className="relative h-screen">
-          <Image
-            src="/hero.jpg"
-            alt="Aerial view of a forest and river"
-            layout="fill"
-            objectFit="cover"
-            className="brightness-50"
-          />
+        <Spotlight
+        className="-top-40 left-0 md:left-60 md:-top-20"
+        fill="white"
+      />
           <motion.div
-            className="absolute inset-0 flex flex-col justify-center container mx-auto px-4"
+            className="absolute inset-0 flex flex-col  justify-center container mx-auto px-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <h1 className="text-5xl md:text-7xl font-bold mb-4">
-              Driving <span className="text-green-400">Sustainable</span>
-              <br />
-              Change
-            </h1>
-            <p className="text-xl mb-8 max-w-2xl">
-              We are a pioneering catalyst driving sustainable change. Our
-              mission is to empower developers of high-quality carbon projects,
-              creating a positive ripple effect.
-            </p>
-            <Button className="bg-green-400 text-black hover:bg-green-500 w-fit">
-              Get Started
-            </Button>
+           <div className="max-w-7xl mx-auto w-full mt-16 relative overflow-hidden h-full md:h-[40rem] px-4">
+        <motion.div
+          initial={{
+            opacity: 0,
+            y: 20,
+          }}
+          animate={{
+            opacity: 1,
+            y: 0,
+          }}
+          transition={{
+            duration: 1,
+          }}
+          className="div"
+        >
+          <h2 className="text-center text-xl md:text-6xl font-bold text-white dark:text-white">
+          Driving <span className="text-green-400">Sustainable</span> Change
+          </h2>
+          <p className="text-center text-base md:text-lg font-normal text-neutral-700 dark:text-neutral-200 max-w-xl mt-2 mx-auto">
+          We are a pioneering catalyst driving sustainable change. Our mission is to empower developers of high-quality carbon projects, creating a positive ripple effect.
+          </p>
+        </motion.div>
+        <div className="absolute w-full bottom-0 inset-x-0  h-40 bg-gradient-to-b pointer-events-none select-none from-transparent to-black z-40" />
+        <div className="absolute w-full -bottom-20 h-72 md:h-full z-10">
+          <World data={sampleArcs} globeConfig={globeConfig} />
+        </div>
+      </div>
           </motion.div>
         </section>
 
-        <AboutUs />
+        {/* <AboutUs /> */}
 
         <AnimatedSection>
           <section className="bg-black py-16">
@@ -520,7 +531,7 @@ export default function Component() {
           </section>
         </AnimatedSection>
 
-        <div className="flex flex-row items-center justify-center py-20 h-screen md:h-auto relative w-full">
+        {/* <div className="flex flex-row items-center justify-center py-20 h-screen md:h-auto relative w-full">
           <div className="max-w-7xl mx-auto w-full relative overflow-hidden h-full md:h-[40rem] px-4">
             <motion.div
               initial={{
@@ -556,9 +567,9 @@ export default function Component() {
               <World data={sampleArcs} globeConfig={globeConfig} />
             </div>
           </div>
-        </div>
+        </div> */}
 
-        <AnimatedSection>
+        {/* <AnimatedSection>
           <section className="bg-black py-16">
             <div className="container mx-auto px-4">
               <motion.div
@@ -617,7 +628,7 @@ export default function Component() {
               </motion.div>
             </div>
           </section>
-        </AnimatedSection>
+        </AnimatedSection> */}
 
         <AnimatedSection>
           <section className="relative py-24">

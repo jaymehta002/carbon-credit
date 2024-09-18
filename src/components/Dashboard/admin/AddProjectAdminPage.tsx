@@ -99,7 +99,7 @@ export default function AdminProjectFormCreator({
   };
 
   return (
-    <div className="flex mx-auto px-4 py-8">
+    <div className="flex gap-2 mx-auto px-4 py-8">
       <Card className="w-1/2">
         <CardHeader>
           <CardTitle className="text-2xl font-bold">

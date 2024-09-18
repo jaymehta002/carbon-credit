@@ -1,11 +1,5 @@
-import Link from "next/link"
-import { Input } from "@/components/ui/input"
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem } from "@/components/ui/dropdown-menu"
-import { Button } from "@/components/ui/button"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ResponsiveBar } from "@nivo/bar"
-import { ResponsiveLine } from "@nivo/line"
-import Image from "next/image"
 
 export default function DashboardAnalytics() {
   return (

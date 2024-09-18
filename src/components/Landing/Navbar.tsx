@@ -20,7 +20,7 @@ const Navbar = () => {
 
   return (
     <motion.header
-      className="fixed w-full px-4 py-6 flex justify-between items-center z-10 transition-colors duration-300"
+      className="fixed w-full px-4 py-6 flex justify-between items-center z-[999] transition-colors duration-300"
       initial={false}
       animate={{ opacity: 1 }}
       style={{
@@ -44,7 +44,7 @@ const Navbar = () => {
       </motion.div>
 
       <nav className="hidden md:flex items-center space-x-6">
-        {["Our Proposition", "Investors", "Solutions", "About Us", "Contact"].map(
+        {["About Us","Our Vision", "What we do", "Contact us"].map(
           (item, index) => (
             <motion.a
               key={item}
