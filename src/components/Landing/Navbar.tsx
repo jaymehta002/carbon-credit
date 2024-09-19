@@ -34,27 +34,34 @@ const Navbar = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
+        <Link href='/'>
         <Image
           src="/logo.png"
           alt="Boncap Logo"
           width={40}
           height={40}
           className="w-12"
-        />
+          />
+          </Link>
       </motion.div>
 
       <nav className="hidden md:flex items-center space-x-6">
-        {["About Us","Our Vision", "What we do", "Contact us"].map(
+        {[
+          {title:"About Us", link:"#"},
+          {title:"Our Vision",  link:"#"},
+          {title:"What we do",  link:"#"},
+          {title:"Contact us", link:"contact"}
+        ].map(
           (item, index) => (
             <motion.a
-              key={item}
-              href="#"
+              key={item.title}
+              href={item.link}
               className="hover:text-green-400"
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              {item}
+              {item.title}
             </motion.a>
           )
         )}
