@@ -4,14 +4,13 @@ import {
   SidebarBody,
   SidebarLink,
 } from "@/components/Dashboard/sidebar";
-import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils";
 import { UserButton } from "@clerk/nextjs";
-import { LayoutDashboard, User, Wallet, Plus, CircleDollarSign } from "lucide-react";
 import { motion } from "framer-motion";
+import { CircleDollarSign, LayoutDashboard, Plus, User, Wallet } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import Image from "next/image";
 
 const links = [
   {
@@ -88,12 +87,6 @@ export default function RootLayout({
   const [open, setOpen] = useState(false);
 
   return (
-    <ThemeProvider
-    attribute="class"
-    defaultTheme="dark"
-    enableSystem
-    disableTransitionOnChange
-  >
     <div
       className={cn(
         "rounded-md flex flex-col md:flex-row dark:bg-neutral-800 w-full flex-1 mx-auto border border-neutral-200 dark:border-neutral-700 overflow-hidden",
@@ -117,6 +110,5 @@ export default function RootLayout({
       </Sidebar>
       <main className="flex-1 overflow-y-auto">{children}</main>
     </div>
-    </ThemeProvider>
   );
 }
