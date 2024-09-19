@@ -2,21 +2,6 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import {
   Dialog,
@@ -32,10 +17,9 @@ import {
   updateProjectStatus,
   updateUserTokenBalance,
 } from "@/app/dashboard/actions";
-import { Trash } from "lucide-react";
 import DashboardAnalytics from "./DashboardAnalytics";
-
-const statusOptions = ["PENDING", "INITIALIZED", "PROCESSING", "COMPLETED"];
+import { DataTable } from "./Tables/AdminDataTable";
+import { getColumns } from "./Tables/admin-table-columns";
 
 interface DashboardPageProps {
   fetchedProjects: (Project & {
@@ -53,7 +37,6 @@ export default function DashboardAdminPage({
   totalProjects,
   totalProjectCategories,
 }: DashboardPageProps) {
-  console.log("🚀 ~ DashboardAdminPage ~ fetchedProjects:", fetchedProjects);
   const [projects, setProjects] = useState(fetchedProjects);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tokenAmount, setTokenAmount] = useState("");
@@ -83,8 +66,7 @@ export default function DashboardAdminPage({
         });
 
         if (newStatus === "COMPLETED") {
-          setCurrentProject(id);
-          setIsModalOpen(true);
+          openTokenModal(id);
         }
       } else {
         throw new Error(result.error);
@@ -97,6 +79,26 @@ export default function DashboardAdminPage({
         variant: "destructive",
       });
     }
+  };
+
+  const handleDelete = async (id: string) => {
+    const res = await deleteProject(id);
+    if (res.success) {
+      toast({
+        title: "Deleted Successfully",
+      });
+      setProjects(projects.filter((project) => project.id !== id));
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Error while deleting project",
+      });
+    }
+  };
+
+  const openTokenModal = (projectId: string) => {
+    setCurrentProject(projectId);
+    setIsModalOpen(true);
   };
 
   const handleSendTokens = async () => {
@@ -171,30 +173,16 @@ export default function DashboardAdminPage({
     }
   };
 
-  const handleDelete = async (id: string) => {
-    console.log("🚀 ~ handleDelete ~ id:", id);
-    const res = await deleteProject(id);
-    if (res.success) {
-      toast({
-        title: "Deleted Successfully",
-      });
-      setProjects(projects.filter((project) => project.id !== id)); // Update state to remove project
-    } else {
-      toast({
-        variant: "destructive",
-        title: "Error while deleting project",
-      });
-    }
-  };
+  const columns = getColumns(handleStatusChange, handleDelete, openTokenModal);
 
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
 
       <DashboardAnalytics 
-      totalUsers={totalUsers}
-      totalProjects={totalProjects}
-      totalProjectCategories={totalProjectCategories}
+        totalUsers={totalUsers}
+        totalProjects={totalProjects}
+        totalProjectCategories={totalProjectCategories}
       />
 
       <Card>
@@ -202,64 +190,7 @@ export default function DashboardAdminPage({
           <CardTitle>Recent Projects</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>User Email</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>User Token Balance</TableHead>
-                <TableHead>Action</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {projects.map((project) => (
-                <TableRow key={project.id}>
-                  <TableCell className="font-medium">
-                    {project.projectCategory.name}
-                  </TableCell>
-                  <TableCell className="font-medium">
-                    {project.user.email}
-                  </TableCell>
-                  <TableCell>
-                    {project.createdAt.toLocaleDateString()}
-                  </TableCell>
-                  <TableCell>
-                    <Select
-                      defaultValue={project.status}
-                      onValueChange={(value) =>
-                        handleStatusChange(project.id, value as ProjectStatus)
-                      }
-                    >
-                      <SelectTrigger className="w-[140px]">
-                        <SelectValue placeholder="Select status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {statusOptions.map((status) => (
-                          <SelectItem key={status} value={status}>
-                            {status}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </TableCell>
-                  <TableCell>{project.user.tokenBalance}</TableCell>
-                  <TableCell>
-                    <Button
-                      className="gap-2"
-                      variant={"destructive"}
-                      onClick={() => handleDelete(project.id)}
-                    >
-                      <Trash size={"16px"} />
-                      Delete
-                    </Button>{" "}
-                    {/* Add delete button */}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <DataTable columns={columns} data={projects} />
         </CardContent>
       </Card>
 

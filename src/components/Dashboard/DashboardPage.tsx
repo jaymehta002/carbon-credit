@@ -1,8 +1,8 @@
-"use client"
-import { deleteProject } from "@/app/dashboard/actions"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+"use client";
+import { deleteProject } from "@/app/dashboard/actions";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -10,34 +10,34 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { useToast } from "@/hooks/use-toast"
-import { Project, ProjectCategory } from "@prisma/client"
-import { PencilIcon, Trash2 } from "lucide-react"
+} from "@/components/ui/table";
+import { useToast } from "@/hooks/use-toast";
+import { Project, ProjectCategory } from "@prisma/client";
+import { PencilIcon, Trash2 } from "lucide-react";
 import { useState } from "react"; // Add this import
+import DataTable from "./user/UserDataTable";
 
 interface DashboardPageProps {
   fetchedProjects: (Project & { projectCategory: ProjectCategory })[]; // Updated to include projectCategory
 }
 
 export default function DashboardPage({ fetchedProjects }: DashboardPageProps) {
-  const {toast}=useToast()
+  const { toast } = useToast();
   const [projects, setProjects] = useState(fetchedProjects); // Add state for projects
 
-  const handleDelete =async (id: string) => {
-    console.log("🚀 ~ handleDelete ~ id:", id)
-    const res=await deleteProject(id);
-    if(res.success){
+  const handleDelete = async (id: string) => {
+    console.log("🚀 ~ handleDelete ~ id:", id);
+    const res = await deleteProject(id);
+    if (res.success) {
       toast({
-        title:"Deleted Successfully",
-      })
-      setProjects(projects.filter(project => project.id !== id)); // Update state to remove project
-    }
-    else{
+        title: "Deleted Successfully",
+      });
+      setProjects(projects.filter((project) => project.id !== id)); // Update state to remove project
+    } else {
       toast({
-        variant:"destructive",
-        title:"Error while deleting project"
-      })
+        variant: "destructive",
+        title: "Error while deleting project",
+      });
     }
   };
 
@@ -45,37 +45,10 @@ export default function DashboardPage({ fetchedProjects }: DashboardPageProps) {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <Card>
-        <CardHeader>
-          <CardTitle>Your Projects</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Action</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {projects.map((project) => ( // Use state variable
-                <TableRow key={project.id}>
-                  <TableCell className="font-medium">{project.projectCategory.name}</TableCell> 
-                  <TableCell>{project.createdAt.toLocaleDateString()}</TableCell>
-                  <TableCell>{project.status}</TableCell>
-                  <TableCell>
-                    <Button variant="destructive" className="gap-2" onClick={() => handleDelete(project.id)}>
-                      <Trash2 size={"16px"}/>
-                      Delete</Button> {/* Add delete button */}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      <div>
+        <h1>Your Projects</h1>
+        <DataTable data={fetchedProjects} />
+      </div>
     </div>
-  )
+  );
 }
